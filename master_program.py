@@ -7,9 +7,10 @@ import sys
 import json
 import requests
 import urllib
+import glob
 
 global slave_file
-slave_file = "lcdqr.py"
+slave_file = glob.glob('lcdqr*.py')
 def check_update():
 	remote_file = "test.py"
 	file = [{'input': remote_file}]
