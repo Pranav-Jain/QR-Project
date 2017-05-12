@@ -9,9 +9,10 @@ import requests
 import urllib
 import glob
 import os
+import shutil
 print("Hello")
 global slave_file
-slave_file = str(glob.glob('lcdqr*.py'))
+slave_file = "slave.py"
 def check_update():
 	file = [{'input': slave_file}]
 	print("Update checking")
@@ -20,7 +21,7 @@ def check_update():
 	try:
 		res = requests.post("http://192.168.1.111:5000/check/", json=s).json()
 		check = res['check']
-		rec_file_name=res['file_name']
+		rec_file_name_dir=os.path.join(os.getcwd,res['file_name'])
 		print (check)
 		print (rec_file_name)
 		if(res['url']==''):
@@ -28,13 +29,15 @@ def check_update():
 		else:
 			print (res['url'])
 			try:
-				urllib.urlretrieve(res['url'],rec_file_name)
+				urllib.urlretrieve(res['url'],os.path.join(update_directory,rec_file_name))
 				print ("file retrieved")
 				command = 'ps aux | grep name | grep -v grep | awk "{print $2}"'
 				process = sp.call(command, shell = True)
 				sp.call('pkill -9 '+process, shell=True)
 				delete_cmd = "rm "+slave_file
 				sp.call(delete_cmd , shell=True)
+				shutil.move(os.path.join(update_directory,rec_file_name),os.getcwd())
+				os.rename(rec_file_name,slave_file)
 				os.execv(sys.executable, ['python'] + sys.argv)
 				print("update completed")
 			except:
@@ -42,8 +45,11 @@ def check_update():
 		#os.remove(slave_file)
 	except:
 		print("outer except")
-	threading.Timer(2, check_update).start()	
+	threading.Timer(2, check_update).start()
 
+update_directory = os.path.join(os.getcwd(),"update")
+if not os.path.exists(update_directory):
+    os.makedirs(update_directory)
 
 check_update()
 #cmd = "python3 " + slave_file
