@@ -24,8 +24,14 @@ def check_update():
 			print 'File Not Found'
 		else:
 			print res['url']
-			urllib.urlretrieve(res['url'])
-			print ("file retrieved")
+			try:
+				urllib.urlretrieve(res['url'])
+				print ("file retrieved")
+				command = 'ps aux | grep ' +'\'Python ' + slave_file + '\''
+				process = sp.call(command, shell = True)
+				
+			except:
+				pass
 		#os.remove(slave_file)
 	except:
 		pass
