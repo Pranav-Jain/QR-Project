@@ -8,12 +8,12 @@ import json
 import requests
 import urllib
 import glob
+import os
 
 global slave_file
 slave_file = glob.glob('lcdqr*.py')
 def check_update():
-	remote_file = "test.py"
-	file = [{'input': remote_file}]
+	file = [{'input': slave_file}]
 	s = json.dumps(file)
 	#global slave_file = "lcdqr.py"
 	try:
@@ -27,9 +27,11 @@ def check_update():
 			try:
 				urllib.urlretrieve(res['url'])
 				print ("file retrieved")
-				command = 'ps aux | grep ' +'\'Python ' + slave_file + '\''
+				command = 'ps aux | grep name | grep -v grep | awk "{print $2}"'
 				process = sp.call(command, shell = True)
-				
+				sp.call('pkill -9 '+process, shell=True)
+				sp.call('rm '+ slave_file, shell=True)
+				os.execv(sys.executable, ['python'] + sys.argv)
 			except:
 				pass
 		#os.remove(slave_file)
