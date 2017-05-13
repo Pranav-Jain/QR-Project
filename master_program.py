@@ -58,7 +58,7 @@ def make_log(string):
 		f = open("Master_log.txt", "w")
 	ts= time.time()
 	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-	data_raw= string +"   "+st+'\n' 
+	data_raw= "[" + st + "]" + "  " + string+'\n' 
 	f.write(data_raw)
 	f.flush()
 
