@@ -15,7 +15,7 @@ from uuid import getnode as get_mac
 
 def check_update():
 	slave_file = find_slave_file()                
-	file = [{'input': slave_file,'mac':str(get_mac())}]
+	file = [{'input': slave_file,'mac':str(get_mac()),'time':datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}]
 	make_log("checking for update")
 	s = json.dumps(file)
 	try:
