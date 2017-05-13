@@ -21,30 +21,40 @@ def check_update():
 	try:
 		res = requests.post("http://192.168.1.102:5000/check/", json=s).json()
                 make_log("request made to server")
-		check = res['check']
-                make_log ("return status: "+str(check))
-		rec_file_name = res['file_name']
-		make_log ("file with server: "+rec_file_name)
-		make_log ("file with client(RPi): "+slave_file)
-		if(res['url']==''):
-			make_log ('Update Not Found')
-		else:
-			make_log (res['url'])
-			try:
-				urllib.urlretrieve(res['url'],rec_file_name)
-				make_log ("file retrieved")
-				sp.call("pkill python3",shell=True)
-				make_log ("slave process killed")
-				os.remove(slave_file)
-				make_log ("previous slave file removed")				
-				make_log ("update completed")
-				run_slave(rec_file_name)
-				make_log ("updated slave file called to run")
-			except:
-				make_log ("inner except")
+                if (str(res['reg_status']) == "registered"):
+                        make_log ("register status: "+str(res['reg_status']))
+                        check = res['check']
+                        make_log ("return status: "+str(check))
+                        if(check):
+                                rec_file_name = res['file_name']
+                                make_log ("file with server: "+rec_file_name)
+                                make_log ("file with client(RPi): "+slave_file)
+                                if (slave_file!=rec_file_name):
+                                        if(res['url']==''):
+                                                make_log ('Update Not Found')                                        
+                                        else:
+                                                make_log ("update file url"+res['url'])
+                                                try:
+                                                        urllib.urlretrieve(res['url'],rec_file_name)
+                                                        make_log ("file retrieved")
+                                                        sp.call("pkill python3",shell=True)
+                                                        make_log ("slave process killed")
+                                                        os.remove(slave_file)
+                                                        make_log ("previous slave file removed")				
+                                                        make_log ("update completed")
+                                                        run_slave(rec_file_name)
+                                                        make_log ("updated slave file called to run")
+                                                except:
+                                                        make_log ("inner except")
+                                else:
+                                        make_log("no update available, slave file = rec_file")
+                        else:
+                              make_log ("check status: "+str(check))  
+                else:
+                        make_log ('Not Registered with database')
 	except:
 		make_log ("error contacting server")
-	threading.Timer(10, check_update).start()
+	threading.Timer(2, check_update).start()
 
 def run_slave(slave_file):
         cmd = "python3 " + slave_file
