@@ -23,9 +23,9 @@ def check_update():
                 make_log("request made to server")
                 if (str(res['reg_status']) == "registered"):
                         make_log ("register status: "+str(res['reg_status']))
-                        check = res['check']
-                        make_log ("return status: "+str(check))
-                        if(check):
+                        update_flag = res['update_flag']
+                        make_log ("return status: "+str(update_flag))
+                        if(update_flag):
                                 rec_file_name = res['file_name']
                                 make_log ("file with server: "+rec_file_name)
                                 make_log ("file with client(RPi): "+slave_file)
@@ -49,7 +49,7 @@ def check_update():
                                 else:
                                         make_log("no update available, slave file = rec_file")
                         else:
-                              make_log ("check status: "+str(check))  
+                              make_log ("check status: "+str(update_flag))  
                 else:
                         make_log ('Not Registered with database')
 	except:
