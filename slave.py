@@ -8,6 +8,19 @@ from lcd import *
 import json
 import codecs
 
+def make_log(string):
+    try:
+        Slave_log_file=open("Slave_Log.txt", "a+")
+    except IOError:
+        Slave_log_file = open("Slave_log.txt", "w")
+    ts= time.time()
+    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    data_raw= "[" + st + "]" + "  " + string+'\n' 
+    Slave_log_file.write(data_raw)
+    Slave_log_file.flush()
+
+make_log("Slave Started")
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
 GPIO.setup(LCD_E, GPIO.OUT)  # E
@@ -31,18 +44,19 @@ while True :
     data_raw=data_raw[0:-1]
     qr_code = data_raw
     lcd_byte(0x01,LCD_CMD) # 000001 Clear display
-    lcd_string("Updated",LCD_LINE_1)
+    lcd_string("Scan QR",LCD_LINE_1)
     GPIO.output(21, False)
     if(data_raw):
+        make_log("Barcode Read")
         try:
-            f1 = open("Output.txt", "a+")
+            output_file = open("Output.txt", "a+")
         except:
-            f1 = open("Output.txt", "w")
+            output_file = open("Output.txt", "w")
         ts= time.time()
         st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        data_raw= st + "   " + string +'\n' 
-        f.write(data_raw)
-        f.flush()
+        data_raw= "[" + st + "]" + "  " + data_raw+'\n' 
+        output_file.write(data_raw)
+        output_file.flush()
         make_log("Information is Updated")
         
         qr_code = "/var/www/html/qpasslitesis/protected/./yiic interaccion interaccion --tipo=salida --qrcode=" + qr_code
@@ -51,10 +65,10 @@ while True :
         make_log("Data checked with the database")
         term_out=json.loads(str_term_out)
         msg= term_out["message"]
-        make_log("Output message is: " + msg)
+        make_log("Output message is: " + str(msg))
         n = len(msg)
         status = term_out["status"]
-        make_log("Output Status is: " + status)
+        make_log("Output Status is: " + str(status))
         if (status==1):
             if (n<16):
                 lcd_string(msg,LCD_LINE_1)
@@ -75,17 +89,6 @@ while True :
                 lcd_string(msg[16:],LCD_LINE_2)
                 make_log("Relay OFF")
             #time.sleep(1)
-        f.close()
-
-def make_log(string):
-    try:
-        f=open("Slave_Log.txt", "a+")
-    except IOError:
-        f = open("Slave_log.txt", "w")
-    ts= time.time()
-    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    data_raw= "[" + st + "]" + "  " + string+'\n' 
-    f.write(data_raw)
-    f.flush()
+        output_file.close()
 
 
