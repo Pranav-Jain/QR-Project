@@ -7,62 +7,65 @@ import sys
 import json
 import requests
 import urllib
-import glob
 import os
-import shutil
 import fnmatch
 
-global slave_file
-
-
 def check_update():
-        print(slave_file)
+	slave_file = find_slave_file()                
 	file = [{'input': slave_file}]
-	print("Update checking")
+	make_log("checking for update...")
 	s = json.dumps(file)
-	#global slave_file = "lcdqr.py"
 	try:
-		res = requests.post("http://192.168.43.114:5000/check/", json=s).json()
+		res = requests.post("http://192.168.1.102:5000/check/", json=s).json()
 		check = res['check']
 		rec_file_name = res['file_name']
-		rec_file_name_dir=os.path.join(os.getcwd(),res['file_name'])
-		print (check)
-		print (rec_file_name)
-		print (rec_file_name_dir)
+		make_log (check)
+		make_log (rec_file_name)
 		
 		if(res['url']==''):
-			print ('File Not Found')
+			make_log ('Update Not Found')
 		else:
-			print (res['url'])
+			make_log (res['url'])
 			try:
-				urllib.urlretrieve(res['url'],os.path.join(update_directory,rec_file_name_dir))
-				print ("file retrieved")
-				#process = "ps aux | grep \"[p]ython3 " + slave_file +"\" | awk \'{print $2}\'"
-				#print(process)
-				#sp.call(process,shell=True)
-				#kill_proc = 'pkill -9 '+process[0]
-				#sp.call(kill_proc, shell=True)
-				#print("proc killed")
+				urllib.urlretrieve(res['url'],rec_file_name)
+				make_log ("file retrieved")
+				sp.call("pkill python3",shell=True)
+				make_log ("proc killed")
 				os.remove(slave_file)
-				print("file removed")
-				shutil.move(os.path.join(update_directory,rec_file_name),os.getcwd())
-				#os.rename(rec_file_name,slave_file)
-				os.execv(sys.executable, ['python'] + sys.argv)
-				print("update completed")
+				make_log ("file removed")				
+				make_log ("update completed")
+				run_slave(rec_file_name)
 			except:
-				print("inner except")
-		#os.remove(slave_file)
+				make_log ("inner except")
 	except:
-		print("outer except")
+		make_log ("error contacting server")
 	threading.Timer(2, check_update).start()
 
-update_directory = os.path.join(os.getcwd(),"update")
-if not os.path.exists(update_directory):
-    os.makedirs(update_directory)
+def run_slave(slave_file):
+        cmd = "python3 " + slave_file
+        sp.Popen(cmd, shell=True)
 
-for file in os.listdir('.'):
-        if fnmatch.fnmatch(file, 'lcdqr*.py'):
-                slave_file = file
-check_update()
-#cmd = "python3 " + slave_file
-#sp.Popen(cmd, shell=True)
+
+def find_slave_file():
+        for file in os.listdir('.'):
+                if fnmatch.fnmatch(file, 'slave*.py'):
+                        return str(file)
+
+def make_log(string):
+	try:
+		f=open("Master_Log.txt", "a+")
+	except IOError:
+		f = open("Master_log.txt", "w")
+	ts= time.time()
+	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+	data_raw= string +"   "+st+'\n' 
+	f.write(data_raw)
+	f.flush()
+
+try:
+        run_slave(find_slave_file())
+        make_log ("slave file started running")
+        
+except:
+        make_log ("error running slave file")
+check_update()                        
