@@ -32,7 +32,10 @@ while True :
     lcd_string("Scan QR",LCD_LINE_1)
     GPIO.output(21, False)
     if(data_raw):
-        f=open("output.txt", "a+")
+        try:
+            f=open("output.txt", "a+")
+        except IOError:
+            f=open("output.txt", "w")
         ts= time.time()
         st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
         print(data_raw,st)
