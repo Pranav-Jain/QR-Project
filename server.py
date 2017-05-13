@@ -18,13 +18,6 @@ def check():
 	url=''
 	status = ''
 	print data
-	# macid = [{'mac': str(data[0]['mac'])}]
-	# s = json.dumps(macid)
-	# res = requests.post("http://192.168.1.102:5000/mac/", json=s).json()
-	# print "kdvn"
-	# status = res['reg_status']
-	# print status
-
 	with open("Mac ID.txt", "r") as f:
 		macs = f.readlines()
 	print macs
@@ -34,7 +27,7 @@ def check():
 		status='registered'
 	x = False
 	if status=='registered':
-		x = os.path.isfile("./update/"+data[0]['input']) #put meaningful name
+		x = os.path.isfile("./update/"+data[0]['current_file_name']) #put meaningful name
 		file_url='file' #can be shifted, update_file url, can be made global too
 		if(x==False):
 			url = 'http://192.168.1.102:5000/file/' + file_url
