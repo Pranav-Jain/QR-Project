@@ -32,6 +32,7 @@ GPIO.setup(LCD_D7, GPIO.OUT) # DB7
 GPIO.setup(21, GPIO.OUT)
 
 lcd_init()
+make_log("LCD Initialised")
 ser = serial.Serial('/dev/ttyACM0', 2000000, timeout=2, xonxoff=False, rtscts=False, dsrdtr=False) #Tried with and without the last 3 parameters, and also at 1Mbps, same happens.
 ser.flushInput()
 ser.flushOutput()
@@ -39,7 +40,6 @@ make_log("Serial Initialised")
 while True :
     
     data_raw = ser.readline()
-    make_log("Data read from serial")
     data_raw=str(data_raw,'utf-8')
     data_raw=data_raw[0:-1]
     qr_code = data_raw

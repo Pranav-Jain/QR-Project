@@ -11,10 +11,11 @@ import os
 import fnmatch
 import time
 import datetime
+from uuid import getnode as get_mac
 
 def check_update():
 	slave_file = find_slave_file()                
-	file = [{'input': slave_file}]
+	file = [{'input': slave_file,'mac':str(get_mac())}]
 	make_log("checking for update")
 	s = json.dumps(file)
 	try:
