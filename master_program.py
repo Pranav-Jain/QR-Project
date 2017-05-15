@@ -19,7 +19,7 @@ def check_update():
 	make_log("checking for update")
 	s = json.dumps(file)
 	try:
-		res = requests.post("http://192.168.1.102:5000/check/", json=s).json()
+		res = requests.post("http://192.168.1.106:5000/check/", json=s).json()
                 make_log("request made to server")
                 if (str(res['reg_status']) == "registered"):
                         make_log ("register status: "+str(res['reg_status']))
