@@ -38,7 +38,7 @@ def check_update():
                                                         urllib.urlretrieve(res['url'],rec_file_name)
                                                         make_log ("file retrieved")
                                                         sp.call("pkill python3",shell=True)
-                                                        make_log ("slave process killed")
+                                                        make_log ("slave process is killed")
                                                         os.remove(slave_file)
                                                         make_log ("previous slave file removed")				
                                                         make_log ("update completed")
