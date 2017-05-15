@@ -56,10 +56,6 @@ def register():
 def file(file_url):
 	return send_from_directory(directory=str(os.path.join(os.getcwd(), 'update')), filename='slave1.py', as_attachment=True)
 
-@app.route('/nodemcu' , methods=['GET'])
-def nodemcu():
-	print request.query_string
-	return "200"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
